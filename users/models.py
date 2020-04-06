@@ -4,7 +4,7 @@ from django.db import models
 
 class User(AbstractUser):
 
-    """custom user model"""
+    """Custom User Model Definition"""
 
     GENDER_MALE = "male"
     GENDER_FEMALE = "female"
@@ -18,7 +18,7 @@ class User(AbstractUser):
     CURRENCY_USD = "usd"
     CURRENCY_CHOICES = ((CURRNECY_KRW, "KRW"), (CURRENCY_USD, "USD"))
 
-    avatar = models.ImageField(blank=True)
+    avatar = models.ImageField(upload_to="avatars", blank=True)
     gender = models.CharField(choices=GENDER_CHOICES, max_length=10, blank=True)
     bio = models.TextField(default="", blank=True)
     birthdate = models.DateField(null=True, blank=True)
