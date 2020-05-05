@@ -1,0 +1,23 @@
+<form method="POST" class="w-full" enctype="multipart/form-data">
+    {% csrf_token %}
+
+    {% if form.non_field_errors %}
+        {% for error in form.non_field_errors %}
+        <span class="text-red-700 font-medium text-xs">{{error}}</span>
+        {% endfor %}
+    {% endif %}
+
+    {% for field in form %}
+        <div class="input {% if field.errors %}has_error{% endif %}">
+        <!-- {{field.label}} -->
+        {{field}}
+        {% if field.errors %}
+            {% for error in field.errors %}
+            <span class="text-red-700 font-medium text-xs">{{error}}<br></span>
+            {% endfor %}
+        {% endif %}
+        </div>
+    {% endfor %}
+
+    <button class="btn bg-red-500 text-white my-2">{{Content}}</button>
+</form>

@@ -14,12 +14,15 @@ class CustomUserAdmin(UserAdmin):
             {
                 "fields": (
                     "avatar",
+                    "nickname",
                     "gender",
                     "bio",
                     "birthdate",
                     "language",
                     "currency",
                     "superhost",
+                    "email_verified",
+                    "login_method",
                 )
             },
         ),
@@ -31,6 +34,7 @@ class CustomUserAdmin(UserAdmin):
         "username",
         "first_name",
         "last_name",
+        "nickname",
         "email",
         "is_active",
         "language",
@@ -38,4 +42,7 @@ class CustomUserAdmin(UserAdmin):
         "superhost",
         "is_staff",
         "is_superuser",
+        "email_verified",
+        "email_authKey",
+        "login_method",
     )

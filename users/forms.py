@@ -1,11 +1,14 @@
 from django import forms
+from django.contrib.auth.forms import UserCreationForm
 from . import models
 
 
 class LoginForm(forms.Form):
 
-    email = forms.EmailField()
-    password = forms.CharField(widget=forms.PasswordInput)
+    email = forms.EmailField(widget=forms.EmailInput(attrs={"placeholder": "Email"}))
+    password = forms.CharField(
+        widget=forms.PasswordInput(attrs={"placeholder": "Password"})
+    )
 
     def clean(self):
         email = self.cleaned_data.get("email")
@@ -20,43 +23,39 @@ class LoginForm(forms.Form):
             self.add_error("email", forms.ValidationError("User does not exist"))
 
 
-class SignUpForm(forms.ModelForm):
+class SignUpForm(UserCreationForm):
+    class Meta:
+        model = models.User
+        fields = (
+            "first_name",
+            "last_name",
+            "email",
+        )
+        widgets = {
+            "first_name": forms.TextInput(attrs={"placeholder": "First Name"}),
+            "last_name": forms.TextInput(attrs={"placeholder": "Last Name"}),
+            "email": forms.EmailInput(attrs={"placeholder": "Email"}),
+        }
 
-    # class Meta:
-    #     model =
-    #     fields = []
-
-    first_name = forms.CharField(max_length=80)
-    last_name = forms.CharField(max_length=80)
-    email = forms.EmailField()
-    password = forms.CharField(widget=forms.PasswordInput)
-    password1 = forms.CharField(widget=forms.PasswordInput, label="Comfirm Password")
+    password1 = forms.CharField(
+        widget=forms.PasswordInput(attrs={"placeholder": "Password"})
+    )
+    password2 = forms.CharField(
+        widget=forms.PasswordInput(attrs={"placeholder": "Confirm Password"})
+    )
 
     def clean_email(self):
         email = self.cleaned_data.get("email")
         try:
             models.User.objects.get(email=email)
-            raise forms.ValidationError("User already exist")
+            raise forms.ValidationError("That email is already taken")
         except models.User.DoesNotExist:
             return email
 
-    def clean_password1(self):
-        password = self.cleaned_data.get("password")
-        password1 = self.cleaned_data.get("password1")
-
-        if password != password1:
-            raise forms.ValidationError("Password confirmation does not match")
-        else:
-            return password
-
-    def save(self):
-        first_name = self.cleaned_data.get("first_name")
-        last_name = self.cleaned_data.get("last_name")
-        email = self.cleaned_data.get("email")
-        password = self.cleaned_data.get("password")
-        user = models.User.objects.create_user(
-            username=email, email=email, password=password
-        )
-        user.first_name = first_name
-        user.last_name = last_name
-        user.save()
+    def save(self, commit=True):
+        user = super().save(commit=False)
+        user.set_password(self.cleaned_data["password1"])
+        user.username = self.cleaned_data.get("email")
+        if commit:
+            user.save()
+        return user
